@@ -1,19 +1,28 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 
 public class ServerApp {
     public static void main(String[] args )
     {
+        int i =0;
+
         try (ServerSocket s = new ServerSocket(8888))
         {
             while (true)
             {
                 Socket incoming = s.accept();
                 System.out.println("Ktoś podłączył sie z portu : " + incoming.getPort());
-                Runnable r = new ThreadedEchoHandler(incoming);
+                Runnable r = new ThreadedClientHandler(incoming);
                 Thread t = new Thread(r);
+                i++;
+                System.out.println("tyle zalogowanych: " + i);
                 t.start();
             }
         }
@@ -24,40 +33,70 @@ public class ServerApp {
     }
 }
 
-class ThreadedEchoHandler implements Runnable
+class ThreadedClientHandler implements Runnable
 {
     private Socket incoming;
+    private BlockingQueue<String> wiadomosci = new ArrayBlockingQueue(10);
 
-    public ThreadedEchoHandler(Socket incomingSocket)
+    ThreadedClientHandler(Socket incomingSocket)
     {
         incoming = incomingSocket;
     }
 
-    public void run()
-    {
-        try (InputStream inStream = incoming.getInputStream();
-             OutputStream outStream = incoming.getOutputStream())
-        {
-            Scanner in = new Scanner(inStream, "UTF-8");
-            PrintWriter out = new PrintWriter(
-                    new OutputStreamWriter(outStream, "UTF-8"),
-                    true /* autoFlush */);
-
-            out.println("Podłączyłeś się z portu: " +incoming.getRemoteSocketAddress().toString());
-            out.println("Napisz co u Ciebie");
-
-            boolean done = false;
-            while (!done && in.hasNextLine())
-            {
-                String line = in.nextLine();
-                out.println("Echo: " + line);
-                if (line.trim().equals("q"))
-                    done = true;
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+    @Override
+    public void run() {
+        słuchaj();
+        mów();
     }
+
+    private void słuchaj() {
+        new Thread(()-> {
+            try (InputStream inStream = incoming.getInputStream();
+                ObjectInputStream ois = new ObjectInputStream(inStream)) {
+
+                ObiektDoPrzesyłania obiektDoPrzesyłania =(ObiektDoPrzesyłania) ois.readObject();
+                System.out.println(obiektDoPrzesyłania.polecenie);
+                } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }, "słuchacz wątkowy").start();
+
+    }
+//    private void słuchaj() {
+//        new Thread(()-> {
+//            try (InputStream inStream = incoming.getInputStream()) {
+//                Scanner in = new Scanner(inStream, "UTF-8");
+//                boolean done = false;
+//                while (!done && in.hasNextLine()){
+//                    String line = in.nextLine();
+//                    System.out.println("dzień dobry" + line +"\n");
+//                    wiadomosci.offer("dzień dobry z kolejki\n");
+//                }
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }, "słuchacz wątkowy").start();
+//
+//    }
+
+    private void mów() {
+
+        new Thread(()->{
+            try ( OutputStream outputStream = incoming.getOutputStream()) {
+                String wiadomosc;
+                while(( wiadomosc = wiadomosci.poll(10, TimeUnit.DAYS))!=null){
+                    outputStream.write((wiadomosc + LocalDateTime.now().toString()+"\n").getBytes());
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }, "mówca wątkowy").start();
+    }
+
+
 }

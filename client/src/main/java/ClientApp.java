@@ -7,13 +7,16 @@ public class ClientApp
 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        var scanner = new Scanner(System.in);
+        ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Osoba("Jan", "Nowak"), "Osoba", "Dodaj");
         var socket = new Socket(InetAddress.getLocalHost(), 8888);
-        var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        System.out.println(in.readLine());
-        System.out.println(in.readLine());
-        Thread.sleep(500);
-        socket.getOutputStream().write("sacad\n".getBytes(Charset.defaultCharset()));
+
+        Thread.sleep(5000);
+        System.out.println("Uwaga wysyłam obiekt");
+        Thread.sleep(1000);
+        var out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(obiektDoPrzesyłania);
+        System.out.println("Przesłałem pozdrawiam");
+
 
 
     }
