@@ -53,35 +53,15 @@ class ThreadedClientHandler implements Runnable
         new Thread(()-> {
             try (InputStream inStream = incoming.getInputStream();
                 ObjectInputStream ois = new ObjectInputStream(inStream)) {
+                ObiektDoPrzesyłania obiektDoPrzesyłania;
+                while ((obiektDoPrzesyłania = (ObiektDoPrzesyłania) ois.readObject())!= null) {
+                    System.out.println(obiektDoPrzesyłania.polecenie);
+                }} catch (IOException | ClassNotFoundException e) {
 
-                ObiektDoPrzesyłania obiektDoPrzesyłania =(ObiektDoPrzesyłania) ois.readObject();
-                System.out.println(obiektDoPrzesyłania.polecenie);
-                } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
-
         }, "słuchacz wątkowy").start();
 
     }
-//    private void słuchaj() {
-//        new Thread(()-> {
-//            try (InputStream inStream = incoming.getInputStream()) {
-//                Scanner in = new Scanner(inStream, "UTF-8");
-//                boolean done = false;
-//                while (!done && in.hasNextLine()){
-//                    String line = in.nextLine();
-//                    System.out.println("dzień dobry" + line +"\n");
-//                    wiadomosci.offer("dzień dobry z kolejki\n");
-//                }
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }, "słuchacz wątkowy").start();
-//
-//    }
 
     private void mów() {
 
