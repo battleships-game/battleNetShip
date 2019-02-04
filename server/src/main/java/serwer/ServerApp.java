@@ -1,8 +1,12 @@
-import java.io.*;
+package serwer;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +40,7 @@ public class ServerApp {
 class ThreadedClientHandler implements Runnable
 {
     private Socket incoming;
-    private BlockingQueue<String> wiadomosci = new ArrayBlockingQueue(10);
+    private BlockingQueue<String> wiadomosci = new ArrayBlockingQueue<>(10);
 
     ThreadedClientHandler(Socket incomingSocket)
     {

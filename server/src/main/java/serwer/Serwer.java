@@ -1,0 +1,5 @@
+package serwer;
+
+class Serwer {
+
+}

@@ -1,3 +1,5 @@
+package serwer;
+
 import java.io.Serializable;
 
 public class Osoba implements Serializable {

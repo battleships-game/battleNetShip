@@ -1,3 +1,5 @@
+package serwer;
+
 import java.io.Serializable;
 
 public class ObiektDoPrzesyłania implements Serializable {

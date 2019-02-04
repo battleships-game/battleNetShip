@@ -1,3 +1,5 @@
+package klient;
+
 import java.io.Serializable;
 
 public class ObiektDoPrzesyłania implements Serializable {
@@ -10,5 +12,14 @@ public class ObiektDoPrzesyłania implements Serializable {
         this.o = o;
         this.klasa = klasa;
         this.polecenie = polecenie;
+    }
+
+    @Override
+    public String toString() {
+        return "ObiektDoPrzesyłania{" +
+                "o=" + o +
+                ", klasa='" + klasa + '\'' +
+                ", polecenie='" + polecenie + '\'' +
+                '}';
     }
 }

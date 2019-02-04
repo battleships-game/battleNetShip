@@ -1,3 +1,5 @@
+package klient;
+
 import java.io.Serializable;
 
 public class Osoba implements Serializable {
