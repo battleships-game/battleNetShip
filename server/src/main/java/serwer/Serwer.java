@@ -1,5 +1,0 @@
-package serwer;
-
-class Serwer {
-
-}
