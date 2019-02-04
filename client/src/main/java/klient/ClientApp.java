@@ -14,17 +14,37 @@ public class ClientApp
 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik("Andrzej"), Uzytkownik.class, "PRZYWITANIE");
-        ObiektDoPrzesyłania obiektDoPrzesyłania2 = new ObiektDoPrzesyłania(new Uzytkownik("Andrzej"), Uzytkownik.class, "POŻEGNANIE");
-        ObiektDoPrzesyłania[] obiektDoPrzesyłanias = new ObiektDoPrzesyłania[]{obiektDoPrzesyłania, obiektDoPrzesyłania2};
-        var socket = new Socket("10.30.0.198", 8888);
-//        for(int i = 0; i<100; i++) {
-        Thread.sleep(1000);
-        int round = (int) Math.round(Math.random());
+
+//        var socket = new Socket("10.30.0.198", 8888);
+
+        var socket = new Socket("127.0.0.1", 8888);
         var out = new ObjectOutputStream(socket.getOutputStream());
-        out.writeObject(obiektDoPrzesyłanias[round]);
-//        }
-        System.out.println("Przesłałem pozdrawiam" + round);
+
+        for(int i = 0; i<1000; i++) {
+//            ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik("'Andrzej "+args[0]+", po raz "+i+"'"), Uzytkownik.class, "PRZYWITANIE");
+//            ObiektDoPrzesyłania obiektDoPrzesyłania2 = new ObiektDoPrzesyłania(new Uzytkownik("'Andrzej "+args[0]+", po raz "+i+"'"), Uzytkownik.class, "POŻEGNANIE");
+//            ObiektDoPrzesyłania[] obiektDoPrzesyłanias = new ObiektDoPrzesyłania[]{obiektDoPrzesyłania, obiektDoPrzesyłania2};
+            if(!socket.isClosed())
+            {
+                Thread.sleep(1000);
+//                int round = (int) Math.round(Math.random());
+                if(i>999) {
+                    ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik("'Andrzej "+args[0]+", po raz "+i+"'"), Uzytkownik.class, "PRZYWITANIE");
+                    out.writeObject(obiektDoPrzesyłania);
+                    System.out.println("Wątek nr: "+args[0]+". Przesłałem po raz " + i + " pozdrawiam ");
+                }
+                else {
+                    ObiektDoPrzesyłania obiektDoPrzesyłania2 = new ObiektDoPrzesyłania(new Uzytkownik("'Andrzej "+args[0]+", po raz "+i+"'"), Uzytkownik.class, "POŻEGNANIE");
+                    out.writeObject(obiektDoPrzesyłania2);
+                    System.out.println("Wątek nr: "+args[0]+". Przesłałem po raz " + i + " pozdrawiam ");
+                }
+            }
+            else
+            {
+                System.out.println("Socket przestał działać po "+i);
+            }
+        }
+        out.close();
     }
 
 

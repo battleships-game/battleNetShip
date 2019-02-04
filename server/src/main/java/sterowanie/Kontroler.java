@@ -24,10 +24,11 @@ public class Kontroler {
         if(obiektDoPrzesyłania.polecenie.equals("PRZYWITANIE")){
             Uzytkownik u = (Uzytkownik) obiektDoPrzesyłania.o;
             drukarka.drukuj(String.format("dzień dobry, z tej strony uzytkownik o imieniu %s," +
-                    "utworzony o czasie %s",u.getImie(), u.getCzasStworzenia() ));
+                    " utworzony o czasie %s",u.getImie(), u.getCzasStworzenia() ));
         }
         if(obiektDoPrzesyłania.polecenie.equals("POŻEGNANIE")){
-            drukarka.drukuj("Do widzenia");
+            Uzytkownik u = (Uzytkownik) obiektDoPrzesyłania.o;
+            drukarka.drukuj("Do widzenia "+u.getImie());
         }
     }
 

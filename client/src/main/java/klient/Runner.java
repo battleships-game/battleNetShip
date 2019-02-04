@@ -1,22 +1,21 @@
 package klient;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.IntStream;
 
 public class Runner {
 
-        public static void main(String[] args) throws IOException, InterruptedException {
-            IntStream.range(0,2500).forEach(i->{
+        public static void main(String[] args){
+            IntStream.range(0,10000).forEach(i->{
                 new Thread(()-> {
-                    try {
-                        ClientApp.main(args);
+                    try {final int x =i;
+                        String[] arr = {"nr "+i};
+                        ClientApp.main(arr);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }).start();
+                }, "Klient nr "+i).start();
             });
     }}

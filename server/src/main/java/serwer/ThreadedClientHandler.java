@@ -38,6 +38,7 @@ class ThreadedClientHandler implements Runnable
                 ObiektDoPrzesyłania obiektDoPrzesyłania;
                 while ((obiektDoPrzesyłania = (ObiektDoPrzesyłania) ois.readObject())!= null) {
                    kontroler.rozpakuj(obiektDoPrzesyłania);
+                   wiadomosci.add("Coś wpisać");//TODO
                 }} catch (IOException | ClassNotFoundException e) {
 
             }
