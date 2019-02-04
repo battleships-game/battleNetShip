@@ -1,14 +1,18 @@
-import java.io.*;
-import java.net.*;
-import java.nio.charset.Charset;
-import java.util.*;
+package klient;
+
+import kontrola.ObiektDoPrzesyłania;
+import kontrola.modele.Uzytkownik;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class ClientApp
 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Osoba("Jan", "Nowak"), "Osoba", "Dodaj");
-        ObiektDoPrzesyłania obiektDoPrzesyłania2 = new ObiektDoPrzesyłania(new Osoba("JAnek", "Hej"), "Osoba", "Usuń");
+        ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik("Andrzej"), Uzytkownik.class, "POŻEGNANIE");
         var socket = new Socket(InetAddress.getLocalHost(), 8888);
 
         Thread.sleep(5000);
@@ -16,8 +20,6 @@ public class ClientApp
         Thread.sleep(1000);
         var out = new ObjectOutputStream(socket.getOutputStream());
         out.writeObject(obiektDoPrzesyłania);
-        Thread.sleep(1000);
-        out.writeObject(obiektDoPrzesyłania2);
         System.out.println("Przesłałem pozdrawiam");
 
 

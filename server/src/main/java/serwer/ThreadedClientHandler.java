@@ -1,46 +1,28 @@
-import java.io.*;
-import java.net.ServerSocket;
+package serwer;
+
+import sterowanie.Kontroler;
+import kontrola.ObiektDoPrzesyłania;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-
-public class ServerApp {
-    public static void main(String[] args )
-    {
-        int i =0;
-
-        try (ServerSocket s = new ServerSocket(8888))
-        {
-            while (true)
-            {
-                Socket incoming = s.accept();
-                System.out.println("Ktoś podłączył sie z portu : " + incoming.getPort());
-                Runnable r = new ThreadedClientHandler(incoming);
-                Thread t = new Thread(r);
-                i++;
-                System.out.println("tyle zalogowanych: " + i);
-                t.start();
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-}
-
 class ThreadedClientHandler implements Runnable
 {
     private Socket incoming;
+    private Kontroler kontroler;
     private BlockingQueue<String> wiadomosci = new ArrayBlockingQueue(10);
 
-    ThreadedClientHandler(Socket incomingSocket)
+    ThreadedClientHandler(Socket incomingSocket, Kontroler kontroler)
     {
         incoming = incomingSocket;
+        this.kontroler = kontroler;
     }
 
     @Override
@@ -52,14 +34,14 @@ class ThreadedClientHandler implements Runnable
     private void słuchaj() {
         new Thread(()-> {
             try (InputStream inStream = incoming.getInputStream();
-                ObjectInputStream ois = new ObjectInputStream(inStream)) {
+                 ObjectInputStream ois = new ObjectInputStream(inStream)) {
                 ObiektDoPrzesyłania obiektDoPrzesyłania;
                 while ((obiektDoPrzesyłania = (ObiektDoPrzesyłania) ois.readObject())!= null) {
-                    System.out.println(obiektDoPrzesyłania.polecenie);
+                   kontroler.rozpakuj(obiektDoPrzesyłania);
                 }} catch (IOException | ClassNotFoundException e) {
 
             }
-        }, "słuchacz wątkowy").start();
+        }, "słuchacz_wątkowy_"+Thread.currentThread().getName()).start();
 
     }
 
@@ -75,7 +57,7 @@ class ThreadedClientHandler implements Runnable
                 e.printStackTrace();
             }
 
-        }, "mówca wątkowy").start();
+        }, "mówca_wątkowy_"+Thread.currentThread().getName()).start();
     }
 
 
