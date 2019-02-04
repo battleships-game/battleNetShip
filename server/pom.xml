@@ -36,38 +36,12 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>serwer.AplikacjaSerwera</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-            </plugin>
         </plugins>
 
 
     </build>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.java.version>11</project.java.version>
-        <maven.compiler.source>${project.java.version}</maven.compiler.source>
-        <maven.compiler.target>${project.java.version}</maven.compiler.target>
-        <maven.compiler.encoding>${project.build.sourceEncoding}</maven.compiler.encoding>
-        <maven.resources.encoding>${project.build.sourceEncoding}</maven.resources.encoding>
-        <version.maven>3.5.3</version.maven>
-        <version.plugin.maven.enforcer>3.0.0-M2</version.plugin.maven.enforcer>
-        <version.plugin.maven.jar>3.8.0</version.plugin.maven.jar>
-        <version.plugin.maven.compiler>3.8.0</version.plugin.maven.compiler>
-        <version.plugin.maven.resources>3.8.0</version.plugin.maven.resources>
-        <version.testng>6.14.3</version.testng>
-        <mainClass>${project.groupId}.${project.artifactId}.serwer.AplikacjaSerwera</mainClass>
+        <assembly.mainClass>serwer.AplikacjaSerwera</assembly.mainClass>
     </properties>
 
     <dependencies>

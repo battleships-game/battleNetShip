@@ -25,7 +25,7 @@
                     <configuration>
                         <archive>
                             <manifest>
-                                <mainClass>fully.qualified.MainClass</mainClass>
+                                <mainClass>${assembly.mainClass}</mainClass>
                             </manifest>
                         </archive>
                         <descriptorRefs>
@@ -43,6 +43,7 @@
     </modules>
 
     <properties>
+        <assembly.mainClass>podmianka</assembly.mainClass>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.java.version>11</project.java.version>
