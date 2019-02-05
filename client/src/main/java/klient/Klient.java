@@ -23,29 +23,28 @@ public class Klient {
 
 
     public static Klient getInstance() throws IOException {
-        if(instancja==null){
+        if (instancja == null) {
             instancja = new Klient();
         }
         return instancja;
     }
 
     private Klient() throws IOException {
-        this.gniazdo = new Socket(InetAddress.getLocalHost(),8888);
+        this.gniazdo = new Socket(InetAddress.getLocalHost(), 8888);
         rozpocznijSłuchanie();
         rozpocznijWysylanie();
     }
 
     void rozpocznijWysylanie() {
-        Thread t = new Thread(()->{
+        Thread t = new Thread(() -> {
 
             try (ObjectOutputStream wyjscie = new ObjectOutputStream(
                     gniazdo.getOutputStream())) {
                 ObiektDoPrzesyłania paczka;
-                while ((paczka = kolejkaDoWysyłki.poll(10, TimeUnit.DAYS)) !=null){
+                while ((paczka = kolejkaDoWysyłki.poll(10, TimeUnit.DAYS)) != null) {
                     wyjscie.writeObject(paczka);
                 }
-            }
-            catch (IOException | InterruptedException e){
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
 
@@ -58,10 +57,10 @@ public class Klient {
         kolejkaDoWysyłki.offer(obiektDoPrzesyłania);
     }
 
-    void rozpocznijSłuchanie(){
-        Thread t = new Thread(()->{
+    void rozpocznijSłuchanie() {
+        Thread t = new Thread(() -> {
             try (InputStream inputStream = gniazdo.getInputStream();
-                    ObjectInputStream wejscie = new ObjectInputStream(inputStream)) {
+                 ObjectInputStream wejscie = new ObjectInputStream(inputStream)) {
                 ObiektDoPrzesyłania obiektPrzychodzący;
                 while ((obiektPrzychodzący = (ObiektDoPrzesyłania) wejscie.readObject()) != null
                         && gniazdo.isConnected()) {
@@ -74,6 +73,8 @@ public class Klient {
         t.start();
     }
 
-
+    public boolean czyPodłączony() {
+        return gniazdo.isConnected();
+    }
 
 }

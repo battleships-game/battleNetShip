@@ -1,5 +1,6 @@
 package kontroler;
 
+import klient.Klient;
 import kontrola.ObiektDoPrzesyłania;
 import kontrola.Polecenie;
 import kontrola.modele.OpisPlanszy;
@@ -52,5 +53,9 @@ public class KontrolerKlienta {
         ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(null, null, Polecenie.POBIERZ_UŻYTKOWNIKÓW);
         przesyłacz.ślij(obiektDoPrzesyłania);
         return Arrays.asList("1. ADAM", "2. MARCIN", "3. PIOTREK");
+    }
+
+    public boolean czyPodłączony() throws IOException {
+        return Klient.getInstance().czyPodłączony();
     }
 }

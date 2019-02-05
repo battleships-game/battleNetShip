@@ -1,27 +1,38 @@
 package klient;
 
+import io.Drukarka;
+import io.Wczytywacz;
 import kontroler.KontrolerKlienta;
-import przesył.Przesyłacz;
+import lang.Language;
+import lang.Languages;
+import menu.Menu;
+import menu.RodzajMenu;
 import wyjątki.NieJesteśPodłączonyException;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Scanner;
+import java.util.ResourceBundle;
 
-public class ClientApp
-{
 
-    public static void main(String[] args) throws InterruptedException, NieJesteśPodłączonyException, IOException {
+public class ClientApp {
 
+    public static void main(String[] args) throws InterruptedException, IOException {
 
         KontrolerKlienta kontrolerKlienta = new KontrolerKlienta();
-        kontrolerKlienta.podłączSię("Test");
+        Language.getInstance().setLanguage(Languages.POLISH);
 
-        Thread.sleep(2000);
-        System.out.println("poczkałem 2 sek");
-        Thread.sleep(2000);
-        kontrolerKlienta.pobierzPlanszę(5);
+        // TODO: sprawdzanie czy jest podłączony i w zależności od tego wyświetlić odpowiednie menu
+        Menu menu = new Menu(ResourceBundle.getBundle(Language.getInstance().getLanguage()), RodzajMenu.GLOWNE, kontrolerKlienta);
+
+        while (!kontrolerKlienta.czyPodłączony()) {
+
+
+            Wczytywacz wczytywacz = new Wczytywacz();
+            Drukarka drukarka = new Drukarka();
+            drukarka.println(menu.pobierzMenu());
+
+            int id = Integer.valueOf(wczytywacz.wczytaj());
+            menu.pobierzFunkcjonalnosc(id).wykonaj();
+        }
 
         try {
             kontrolerKlienta.odłączSię();
@@ -30,9 +41,6 @@ public class ClientApp
         }
 
 
-
-
     }
-
 }
 
