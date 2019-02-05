@@ -1,18 +1,30 @@
 package menu;
 
+import menu.model.MapaListOpcjiMenuGłównego;
+
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
-public class Menu {
-    private Drukarka printer = new Drukarka();
-    private ResourceBundle resourceBundle;
-    private TreeMap<Integer,String> mapaOpcji = KreatorMenu.zwrocMapeOpcji();
+public class Menu implements IMenu {
+     ResourceBundle resourceBundle;
+     TreeMap<Integer, OpcjaMenu> mapaOpcji;
+     RodzajMenu rodzajMenu;
 
-    public Menu(ResourceBundle resourceBundle) {
+    public Menu(ResourceBundle resourceBundle, RodzajMenu rodzajMenu) {
         this.resourceBundle = resourceBundle;
+        this.rodzajMenu = rodzajMenu;
+        this.mapaOpcji = new KreatorMenu().zwrocMapeOpcji(new MapaListOpcjiMenuGłównego().getListaOpcjiDlaMenu(rodzajMenu));
     }
 
-    public void menuPowitalne(){
-        mapaOpcji.forEach((k,v)->printer.print(k+ " " +resourceBundle.getString(v)));
+    @Override
+    public List<String> pobierzMenu() {
+        return mapaOpcji.entrySet().stream().map(x->x.getKey().toString() + ".      " + x.getValue().getEtykieta() ).collect(Collectors.toList());
+    }
+
+    @Override
+    public Funkcjonalnosc pobierzFunkcjonalnosc(final int id) {
+        return mapaOpcji.entrySet().stream().filter(x->x.getKey().equals(id)).findFirst().get().getValue().getFunkcjonalnosc();
     }
 }
