@@ -3,21 +3,17 @@ package serwer;
 import kontrola.ObiektDoPrzesyłania;
 import sterowanie.Kontroler;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
-class ThreadedClientHandler implements Runnable
+public class ThreadedClientHandler implements Runnable
 {
     private Socket incoming;
-    private BlockingQueue<String> wiadomosci = new ArrayBlockingQueue<>(10);
+    private BlockingQueue<ObiektDoPrzesyłania> wiadomosci = new ArrayBlockingQueue<>(10);
     private Kontroler kontroler;
 
     ThreadedClientHandler(Socket incomingSocket, Kontroler kontroler)
@@ -38,7 +34,7 @@ class ThreadedClientHandler implements Runnable
                 ObjectInputStream ois = new ObjectInputStream(inStream)) {
                 ObiektDoPrzesyłania obiektDoPrzesyłania;
                 while ((obiektDoPrzesyłania = (ObiektDoPrzesyłania) ois.readObject())!= null) {
-                    kontroler.rozpakuj(obiektDoPrzesyłania);
+                    kontroler.rozpakuj(obiektDoPrzesyłania, this);
                 }} catch (IOException | ClassNotFoundException e) {
 
             }
@@ -49,10 +45,13 @@ class ThreadedClientHandler implements Runnable
     private void mów() {
 
         new Thread(()->{
-            try ( OutputStream outputStream = incoming.getOutputStream()) {
-                String wiadomosc;
+            try ( OutputStream outputStream = incoming.getOutputStream();
+                  ObjectOutputStream oos = new ObjectOutputStream(outputStream)
+            ) {
+                ObiektDoPrzesyłania wiadomosc;
                 while(( wiadomosc = wiadomosci.poll(10, TimeUnit.DAYS))!=null){
-                    outputStream.write((wiadomosc + LocalDateTime.now().toString()+"\n").getBytes());
+                    oos.writeObject(wiadomosc);
+                    System.out.println("wysłalem jako serwer polecenie: " + wiadomosc.getPolecenie());
                 }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -61,5 +60,8 @@ class ThreadedClientHandler implements Runnable
         }, "mówca wątkowy").start();
     }
 
+    public void dodajDoWysłania(ObiektDoPrzesyłania obiektDoPrzesyłania){
+        wiadomosci.add(obiektDoPrzesyłania);
+    }
 
 }

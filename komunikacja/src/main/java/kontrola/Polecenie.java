@@ -1,0 +1,6 @@
+package kontrola;
+
+
+public enum Polecenie {
+    PODŁĄCZ, OPUŚĆ, POBIERZ_PLANSZĘ, AKTUALIZUJ_PLANSZĘ, POBIERZ_UŻYTKOWNIKÓW, POTWIERDZENIE_ODBIORU;
+}

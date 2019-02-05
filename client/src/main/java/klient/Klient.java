@@ -3,91 +3,77 @@ package klient;
 import kontrola.ObiektDoPrzesyłania;
 import kontrola.modele.Uzytkownik;
 import kontrola.modele.Wiadomosc;
+import przesył.Przesyłacz;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
-class Klient {
-    private Socket gniazdo;
-    private Scanner wejscieUzytkownika;
-    private ObjectOutputStream wyjscie;
-    private KontrolerKlienta kontrolerKlienta;
+public class Klient {
 
-    public Klient(Socket gniazdo, Scanner wejscieUzytkownika, KontrolerKlienta kontrolerKlienta) throws IOException {
-        this.gniazdo = gniazdo;
-        this.wejscieUzytkownika = wejscieUzytkownika;
-        this.wyjscie = new ObjectOutputStream(
-                new BufferedOutputStream(gniazdo.getOutputStream()));
-        this.kontrolerKlienta = kontrolerKlienta;
+    private static Klient instancja;
+
+    private static Socket gniazdo;
+    private BlockingQueue<ObiektDoPrzesyłania> kolejkaDoWysyłki = new ArrayBlockingQueue<>(10);
+    private BlockingQueue<ObiektDoPrzesyłania> kolejkaDoOdbioru = new ArrayBlockingQueue<>(10);
+
+
+    public static Klient getInstance() throws IOException {
+        if(instancja==null){
+            instancja = new Klient();
+        }
+        return instancja;
+    }
+
+    private Klient() throws IOException {
+        this.gniazdo = new Socket(InetAddress.getLocalHost(),8888);
+        rozpocznijSłuchanie();
+        rozpocznijWysylanie();
     }
 
     void rozpocznijWysylanie() {
-        try (ObjectOutputStream wyjscie = new ObjectOutputStream(
-                gniazdo.getOutputStream())) {
+        Thread t = new Thread(()->{
 
-            System.out.print("Podaj swoje imię: ");
-            String imie = wejscieUzytkownika.nextLine();
-            Uzytkownik uzytkownik = new Uzytkownik(imie);
-            ObiektDoPrzesyłania obiektDoPrzesyłania = kontrolerKlienta.zapakuj(
-                    uzytkownik,
-                    Uzytkownik.class,
-                    "PRZYWITANIE"
-            );
-            wyjscie.writeObject(obiektDoPrzesyłania);
-            String komunikat;
-            boolean koniecKomunikacji = false;
-            System.out.print(imie + ": ");
-            while ((komunikat = wejscieUzytkownika.nextLine()) != null && !koniecKomunikacji) {
-                System.out.print(imie + ": ");
-                if (komunikat.equals("/quit")) {
-                    koniecKomunikacji = true;
-                    wyjscie.writeObject(
-                            kontrolerKlienta.zapakuj(
-                                    uzytkownik,
-                                    Uzytkownik.class,
-                                    "POŻEGNANIE"
-                            ));
-//                    gniazdo.close();
-                } else {
-                    wyjscie.writeObject(
-                            kontrolerKlienta.zapakuj(
-                                    new Wiadomosc(komunikat),
-                                    Wiadomosc.class,
-                                    "WIADOMOŚĆ"
-                            ));
+            try (ObjectOutputStream wyjscie = new ObjectOutputStream(
+                    gniazdo.getOutputStream())) {
+                ObiektDoPrzesyłania paczka;
+                while ((paczka = kolejkaDoWysyłki.poll(10, TimeUnit.DAYS)) !=null){
+                    wyjscie.writeObject(paczka);
                 }
             }
+            catch (IOException | InterruptedException e){
+                e.printStackTrace();
+            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        }, "wysyłaczKliencki");
+        t.start();
     }
 
-    void rozpocznijNasluchiwanie() {
-        new Thread(new NasluchiwaczWiadomosci(), "nasluchiwacz-klienta").start();
+
+    public void wrzućDoKolejkiWysyłkowej(ObiektDoPrzesyłania obiektDoPrzesyłania) {
+        kolejkaDoWysyłki.offer(obiektDoPrzesyłania);
     }
 
-    class NasluchiwaczWiadomosci implements Runnable {
-        @Override
-        public void run() {
-            try (ObjectInputStream wejscie = new ObjectInputStream(
-                            gniazdo.getInputStream())) {
-                ObiektDoPrzesyłania obiektDoPrzesyłania;
-                while ((obiektDoPrzesyłania = (ObiektDoPrzesyłania) wejscie.readObject()) != null
+    void rozpocznijSłuchanie(){
+        Thread t = new Thread(()->{
+            try (InputStream inputStream = gniazdo.getInputStream();
+                    ObjectInputStream wejscie = new ObjectInputStream(inputStream)) {
+                ObiektDoPrzesyłania obiektPrzychodzący;
+                while ((obiektPrzychodzący = (ObiektDoPrzesyłania) wejscie.readObject()) != null
                         && gniazdo.isConnected()) {
-                    kontrolerKlienta.rozpakuj(obiektDoPrzesyłania);
-                    System.out.println(obiektDoPrzesyłania);
+                    Przesyłacz.getInstance().odbierz(obiektPrzychodzący);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        }
+        }, "słuchaczKliencki");
+        t.start();
     }
+
+
+
 }

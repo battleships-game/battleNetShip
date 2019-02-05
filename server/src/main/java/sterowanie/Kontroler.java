@@ -1,9 +1,13 @@
 package sterowanie;
 
 import kontrola.ObiektDoPrzesyłania;
+import kontrola.Polecenie;
+import kontrola.modele.OpisPlanszy;
+import kontrola.modele.PotwierdzenieOdbioru;
 import kontrola.modele.Uzytkownik;
 import kontrola.modele.Wiadomosc;
 import serwer.Drukarka;
+import serwer.ThreadedClientHandler;
 
 public class Kontroler {
 
@@ -21,18 +25,21 @@ public class Kontroler {
       return kontroler;
     }
 
-    public void rozpakuj(ObiektDoPrzesyłania obiektDoPrzesyłania) {
-        if(obiektDoPrzesyłania.polecenie.equals("PRZYWITANIE")){
-            Uzytkownik u = (Uzytkownik) obiektDoPrzesyłania.o;
+    public void rozpakuj(ObiektDoPrzesyłania obiektDoPrzesyłania, ThreadedClientHandler threadedClientHandler) {
+        if(obiektDoPrzesyłania.getPolecenie().equals(Polecenie.PODŁĄCZ)){
+            Uzytkownik u = (Uzytkownik) obiektDoPrzesyłania.getO();
             drukarka.drukuj(String.format("dzień dobry, z tej strony uzytkownik o imieniu %s," +
                     "utworzony o czasie %s",u.getImie(), u.getCzasStworzenia() ));
         }
-        if(obiektDoPrzesyłania.polecenie.equals("POŻEGNANIE")){
+        if(obiektDoPrzesyłania.getPolecenie().equals(Polecenie.OPUŚĆ)){
             drukarka.drukuj("Do widzenia");
         }
-        if (obiektDoPrzesyłania.polecenie.equals("WIADOMOŚĆ")) {
-            Wiadomosc w = (Wiadomosc) obiektDoPrzesyłania.o;
-            drukarka.drukuj("Wiadomosc: " + w.tresc);
+        if (obiektDoPrzesyłania.getPolecenie().equals(Polecenie.POBIERZ_PLANSZĘ)) {
+            OpisPlanszy op = (OpisPlanszy) obiektDoPrzesyłania.getO();
+            drukarka.drukuj("Ktoś chciał pobrac planszę numer: " + op.getIndex());
+            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania()), PotwierdzenieOdbioru.class, Polecenie.POTWIERDZENIE_ODBIORU));
+            op.setPlansza("XXXXXXOXXX");
+            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(op, OpisPlanszy.class, Polecenie.POBIERZ_PLANSZĘ));
         }
     }
 
