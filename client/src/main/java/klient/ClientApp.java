@@ -26,9 +26,9 @@ public class ClientApp
 //            ObiektDoPrzesyłania[] obiektDoPrzesyłanias = new ObiektDoPrzesyłania[]{obiektDoPrzesyłania, obiektDoPrzesyłania2};
             if(!socket.isClosed())
             {
-                Thread.sleep(1000);
+                Thread.sleep(300);
 //                int round = (int) Math.round(Math.random());
-                if(i>999) {
+                if(i<999) {
                     ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik("'Andrzej "+args[0]+", po raz "+i+"'"), Uzytkownik.class, "PRZYWITANIE");
                     out.writeObject(obiektDoPrzesyłania);
                     System.out.println("Wątek nr: "+args[0]+". Przesłałem po raz " + i + " pozdrawiam ");
@@ -41,7 +41,7 @@ public class ClientApp
             }
             else
             {
-                System.out.println("Socket przestał działać po "+i);
+                System.out.println("Socket "+args[0]+" przestał działać po "+i);
             }
         }
         out.close();
