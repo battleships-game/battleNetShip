@@ -21,7 +21,7 @@ public class Language {
     }
 
     public String getLanguage() {
-        return language.toString();
+        return language.getValue();
     }
 
     public void setLanguage(Languages language) {
