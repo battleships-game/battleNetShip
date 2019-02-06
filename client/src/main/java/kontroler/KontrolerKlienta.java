@@ -2,14 +2,13 @@ package kontroler;
 
 import kontrola.ObiektDoPrzesyłania;
 import kontrola.Polecenie;
+import kontrola.modele.Odpowiedz;
 import kontrola.modele.OpisPlanszy;
 import kontrola.modele.Uzytkownik;
-import modele.Odpowiedź;
 import przesył.Przesyłacz;
 import wyjątki.NieJesteśPodłączonyException;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 public class KontrolerKlienta {
@@ -21,7 +20,7 @@ public class KontrolerKlienta {
     }
 
 
-    public Odpowiedź podłączSię(String imię) throws InterruptedException, IOException {
+    public Odpowiedz podłączSię(String imię) throws InterruptedException, IOException {
         this.przesyłacz = Przesyłacz.getInstance();
         ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik(imię), Uzytkownik.class, Polecenie.PODŁĄCZ);
         return przesyłacz.ślij(obiektDoPrzesyłania);
@@ -37,7 +36,7 @@ public class KontrolerKlienta {
         return true;
     }
 
-    public Odpowiedź pobierzPlanszę(int numer) throws NieJesteśPodłączonyException, InterruptedException {
+    public Odpowiedz pobierzPlanszę(int numer) throws NieJesteśPodłączonyException, InterruptedException {
         if(przesyłacz==null){
             throw new NieJesteśPodłączonyException();
         }
@@ -50,6 +49,6 @@ public class KontrolerKlienta {
             throw new NieJesteśPodłączonyException();
         }
         ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(null, null, Polecenie.POBIERZ_UŻYTKOWNIKÓW);
-        return  (List<String>) przesyłacz.ślij(obiektDoPrzesyłania).getObject();
+        return  (List<String>) przesyłacz.ślij(obiektDoPrzesyłania).getZawartosc();
     }
 }

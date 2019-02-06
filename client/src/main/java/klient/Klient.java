@@ -1,15 +1,11 @@
 package klient;
 
 import kontrola.ObiektDoPrzesyłania;
-import kontrola.modele.PotwierdzenieOdbioru;
-import kontrola.modele.Uzytkownik;
-import kontrola.modele.Wiadomosc;
 import przesył.Przesyłacz;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;

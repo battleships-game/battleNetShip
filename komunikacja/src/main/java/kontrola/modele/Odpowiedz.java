@@ -3,30 +3,40 @@ package kontrola.modele;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class PotwierdzenieOdbioru implements Serializable {
-    int numerPotwierdzenia;
-    String wiadomość;
+public class Odpowiedz implements Serializable {
 
-    public Object getOdpowiedz() {
-        return odpowiedz;
-    }
+    private int numerPotwierdzenia;
+    private String wiadomość;
+    private Object zawartosc;
 
-    public void setOdpowiedz(Object odpowiedz) {
-        this.odpowiedz = odpowiedz;
-    }
 
-    Object odpowiedz;
-
-    public PotwierdzenieOdbioru(int numerPotwierdzenia) {
+    public Odpowiedz(int numerPotwierdzenia) {
         this.numerPotwierdzenia = numerPotwierdzenia;
         this.wiadomość = "OK";
+    }
+
+
+    public Odpowiedz(String wiadomość) {
+        this.wiadomość = wiadomość;
+    }
+
+    public Object getZawartosc() {
+        return zawartosc;
+    }
+
+    public void setZawartosc(Object zawartosc) {
+        this.zawartosc = zawartosc;
+    }
+
+    public String getWiadomość() {
+        return wiadomość;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PotwierdzenieOdbioru)) return false;
-        PotwierdzenieOdbioru that = (PotwierdzenieOdbioru) o;
+        if (!(o instanceof Odpowiedz)) return false;
+        Odpowiedz that = (Odpowiedz) o;
         return numerPotwierdzenia == that.numerPotwierdzenia &&
                 Objects.equals(wiadomość, that.wiadomość);
     }
@@ -38,13 +48,9 @@ public class PotwierdzenieOdbioru implements Serializable {
 
     @Override
     public String toString() {
-        return "PotwierdzenieOdbioru{" +
+        return "Odpowiedz{" +
                 "numerPotwierdzenia=" + numerPotwierdzenia +
                 ", wiadomość='" + wiadomość + '\'' +
                 '}';
-    }
-
-    public String getWiadomość() {
-        return wiadomość;
     }
 }
