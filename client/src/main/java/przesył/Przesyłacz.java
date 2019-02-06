@@ -5,6 +5,7 @@ import kontrola.ObiektDoPrzesyłania;
 import kontrola.Polecenie;
 import kontrola.modele.PotwierdzenieOdbioru;
 import kontroler.KontrolerKlienta;
+import modele.Odpowiedź;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,10 +16,10 @@ public class Przesyłacz {
 
     static private volatile Przesyłacz przesyłacz;
     private Klient klient;
-    private BlockingQueue<PotwierdzenieOdbioru> potwierdzenia = new ArrayBlockingQueue(10);
+    public BlockingQueue<PotwierdzenieOdbioru> potwierdzenia = new ArrayBlockingQueue(10);
 
-    Object blk1 = new Object();
-    Object blk2 = new Object();
+    final Object blk1 = new Object();
+    final Object blk2 = new Object();
 
 
     public static Przesyłacz getInstance() throws IOException {
@@ -29,28 +30,25 @@ public class Przesyłacz {
     }
 
     private Przesyłacz() throws IOException {
-
         this.klient = Klient.getInstance();
     }
 
-    public boolean ślij(ObiektDoPrzesyłania obiektDoPrzesyłania) throws InterruptedException {
+    public Odpowiedź ślij(ObiektDoPrzesyłania obiektDoPrzesyłania) throws InterruptedException {
         synchronized (blk1){
         klient.wrzućDoKolejkiWysyłkowej(obiektDoPrzesyłania);
         PotwierdzenieOdbioru po  = new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania());
         PotwierdzenieOdbioru uzyskane;
-            System.out.println("bede czekał 100s aż się pojawi");
-                while((uzyskane = potwierdzenia.poll(10, TimeUnit.SECONDS))!=null){
-                    System.out.println("poczekalem i się pojawiło");
-                    System.out.println("uzyskane"+uzyskane.toString());
-                    System.out.println("nasze"+po.toString());
+            System.out.println(potwierdzenia);
+                while((uzyskane = potwierdzenia.poll(2, TimeUnit.SECONDS))!=null){
                     if (uzyskane.equals(po)){
-                        System.out.println("Mamy potwierdzenie odbioru" + uzyskane.toString());
-                        return true;
+                        var odp = new Odpowiedź(uzyskane.getWiadomość());
+                        odp.setObject(uzyskane.getOdpowiedz());
+                        return odp;
                     }
         }
             System.out.println(potwierdzenia.size());
             System.out.println("Nie było nic w kolejce");
-            return false;
+            return new Odpowiedź("nie powiodło się");
     }}
 
 

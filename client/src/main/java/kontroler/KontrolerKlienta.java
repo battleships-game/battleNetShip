@@ -4,6 +4,7 @@ import kontrola.ObiektDoPrzesyłania;
 import kontrola.Polecenie;
 import kontrola.modele.OpisPlanszy;
 import kontrola.modele.Uzytkownik;
+import modele.Odpowiedź;
 import przesył.Przesyłacz;
 import wyjątki.NieJesteśPodłączonyException;
 
@@ -20,11 +21,11 @@ public class KontrolerKlienta {
     }
 
 
-    public boolean podłączSię(String imię) throws InterruptedException, IOException {
+    public Odpowiedź podłączSię(String imię) throws InterruptedException, IOException {
         this.przesyłacz = Przesyłacz.getInstance();
         ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new Uzytkownik(imię), Uzytkownik.class, Polecenie.PODŁĄCZ);
-         przesyłacz.ślij(obiektDoPrzesyłania);
-        return true;
+        return przesyłacz.ślij(obiektDoPrzesyłania);
+
     }
 
     public boolean odłączSię() throws NieJesteśPodłączonyException, InterruptedException {
@@ -36,13 +37,12 @@ public class KontrolerKlienta {
         return true;
     }
 
-    public String pobierzPlanszę(int numer) throws NieJesteśPodłączonyException, InterruptedException {
+    public Odpowiedź pobierzPlanszę(int numer) throws NieJesteśPodłączonyException, InterruptedException {
         if(przesyłacz==null){
             throw new NieJesteśPodłączonyException();
         }
         ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(new OpisPlanszy(numer), OpisPlanszy.class, Polecenie.POBIERZ_PLANSZĘ);
-        przesyłacz.ślij(obiektDoPrzesyłania);
-        return "OOOOOOOOO";
+        return przesyłacz.ślij(obiektDoPrzesyłania);
     }
 
     public List<String> pobierzKlientów() throws NieJesteśPodłączonyException, InterruptedException {
@@ -50,7 +50,6 @@ public class KontrolerKlienta {
             throw new NieJesteśPodłączonyException();
         }
         ObiektDoPrzesyłania obiektDoPrzesyłania = new ObiektDoPrzesyłania(null, null, Polecenie.POBIERZ_UŻYTKOWNIKÓW);
-        przesyłacz.ślij(obiektDoPrzesyłania);
-        return Arrays.asList("1. ADAM", "2. MARCIN", "3. PIOTREK");
+        return  (List<String>) przesyłacz.ślij(obiektDoPrzesyłania).getObject();
     }
 }

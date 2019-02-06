@@ -30,6 +30,7 @@ public class Kontroler {
             Uzytkownik u = (Uzytkownik) obiektDoPrzesyłania.getO();
             drukarka.drukuj(String.format("dzień dobry, z tej strony uzytkownik o imieniu %s," +
                     "utworzony o czasie %s",u.getImie(), u.getCzasStworzenia() ));
+            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania()), PotwierdzenieOdbioru.class, Polecenie.POTWIERDZENIE_ODBIORU));
         }
         if(obiektDoPrzesyłania.getPolecenie().equals(Polecenie.OPUŚĆ)){
             drukarka.drukuj("Do widzenia");
@@ -37,9 +38,11 @@ public class Kontroler {
         if (obiektDoPrzesyłania.getPolecenie().equals(Polecenie.POBIERZ_PLANSZĘ)) {
             OpisPlanszy op = (OpisPlanszy) obiektDoPrzesyłania.getO();
             drukarka.drukuj("Ktoś chciał pobrac planszę numer: " + op.getIndex());
-            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania()), PotwierdzenieOdbioru.class, Polecenie.POTWIERDZENIE_ODBIORU));
             op.setPlansza("XXXXXXOXXX");
-            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(op, OpisPlanszy.class, Polecenie.POBIERZ_PLANSZĘ));
+
+            var potwierdzenie = new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania());
+            potwierdzenie.setOdpowiedz(op);
+            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(potwierdzenie, PotwierdzenieOdbioru.class, Polecenie.POTWIERDZENIE_ODBIORU));
         }
     }
 

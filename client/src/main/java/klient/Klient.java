@@ -1,6 +1,7 @@
 package klient;
 
 import kontrola.ObiektDoPrzesyłania;
+import kontrola.modele.PotwierdzenieOdbioru;
 import kontrola.modele.Uzytkownik;
 import kontrola.modele.Wiadomosc;
 import przesył.Przesyłacz;

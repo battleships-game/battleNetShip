@@ -1,6 +1,8 @@
 package klient;
 
+import kontrola.modele.OpisPlanszy;
 import kontroler.KontrolerKlienta;
+import modele.Odpowiedź;
 import przesył.Przesyłacz;
 import wyjątki.NieJesteśPodłączonyException;
 
@@ -16,21 +18,20 @@ public class ClientApp
 
 
         KontrolerKlienta kontrolerKlienta = new KontrolerKlienta();
-        kontrolerKlienta.podłączSię("Test");
+        Thread.sleep(1000);
+        System.out.println("poczkałem sekunde sek");
+        Odpowiedź odp =  kontrolerKlienta.podłączSię("Test");
 
         Thread.sleep(2000);
-        System.out.println("poczkałem 2 sek");
-        Thread.sleep(2000);
-        kontrolerKlienta.pobierzPlanszę(5);
+        Odpowiedź odp2 = kontrolerKlienta.pobierzPlanszę(5);
+        var obj = (OpisPlanszy) odp2.getObject();
+        System.out.println("Plansza wygląda tak: " +obj.getPlansza());
 
-        try {
-            kontrolerKlienta.odłączSię();
-        } catch (NieJesteśPodłączonyException e) {
-            System.out.println("nie byles podlaczony");
-        }
-
-
-
+//        try {
+//            kontrolerKlienta.odłączSię();
+//        } catch (NieJesteśPodłączonyException e) {
+//            System.out.println("nie byles podlaczony");
+//        }
 
     }
 

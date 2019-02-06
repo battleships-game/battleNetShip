@@ -6,6 +6,10 @@ public class OpisPlanszy implements Serializable {
     int index;
     String plansza;
 
+    public String getPlansza() {
+        return plansza;
+    }
+
     public OpisPlanszy(int index) {
         this.index = index;
         this.plansza = "OOOOOOOOOO";

@@ -7,6 +7,16 @@ public class PotwierdzenieOdbioru implements Serializable {
     int numerPotwierdzenia;
     String wiadomość;
 
+    public Object getOdpowiedz() {
+        return odpowiedz;
+    }
+
+    public void setOdpowiedz(Object odpowiedz) {
+        this.odpowiedz = odpowiedz;
+    }
+
+    Object odpowiedz;
+
     public PotwierdzenieOdbioru(int numerPotwierdzenia) {
         this.numerPotwierdzenia = numerPotwierdzenia;
         this.wiadomość = "OK";
@@ -32,5 +42,9 @@ public class PotwierdzenieOdbioru implements Serializable {
                 "numerPotwierdzenia=" + numerPotwierdzenia +
                 ", wiadomość='" + wiadomość + '\'' +
                 '}';
+    }
+
+    public String getWiadomość() {
+        return wiadomość;
     }
 }
