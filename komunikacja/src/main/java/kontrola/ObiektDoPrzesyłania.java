@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ObiektDoPrzesyłania implements Serializable {
 
-
+//
     static AtomicInteger nextId = new AtomicInteger();
 
 
