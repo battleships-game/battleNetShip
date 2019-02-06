@@ -3,9 +3,8 @@ package sterowanie;
 import kontrola.ObiektDoPrzesyłania;
 import kontrola.Polecenie;
 import kontrola.modele.OpisPlanszy;
-import kontrola.modele.PotwierdzenieOdbioru;
+import kontrola.modele.Odpowiedz;
 import kontrola.modele.Uzytkownik;
-import kontrola.modele.Wiadomosc;
 import serwer.Drukarka;
 import serwer.ThreadedClientHandler;
 
@@ -30,7 +29,7 @@ public class Kontroler {
             Uzytkownik u = (Uzytkownik) obiektDoPrzesyłania.getO();
             drukarka.drukuj(String.format("dzień dobry, z tej strony uzytkownik o imieniu %s," +
                     "utworzony o czasie %s",u.getImie(), u.getCzasStworzenia() ));
-            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania()), PotwierdzenieOdbioru.class, Polecenie.POTWIERDZENIE_ODBIORU));
+            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(new Odpowiedz(obiektDoPrzesyłania.getNumerZapytania()), Odpowiedz.class, Polecenie.POTWIERDZENIE_ODBIORU));
         }
         if(obiektDoPrzesyłania.getPolecenie().equals(Polecenie.OPUŚĆ)){
             drukarka.drukuj("Do widzenia");
@@ -40,9 +39,9 @@ public class Kontroler {
             drukarka.drukuj("Ktoś chciał pobrac planszę numer: " + op.getIndex());
             op.setPlansza("XXXXXXOXXX");
 
-            var potwierdzenie = new PotwierdzenieOdbioru(obiektDoPrzesyłania.getNumerZapytania());
-            potwierdzenie.setOdpowiedz(op);
-            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(potwierdzenie, PotwierdzenieOdbioru.class, Polecenie.POTWIERDZENIE_ODBIORU));
+            var odpowiedz = new Odpowiedz(obiektDoPrzesyłania.getNumerZapytania());
+            odpowiedz.setZawartosc(op);
+            threadedClientHandler.dodajDoWysłania(new ObiektDoPrzesyłania(odpowiedz, Odpowiedz.class, Polecenie.POTWIERDZENIE_ODBIORU));
         }
     }
 
